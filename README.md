@@ -1,4 +1,4 @@
-ElevatorControlApi
+**ElevatorControlApi**
 
 This API exposes four endpoints with actions mimicking Elevator Control:
 

@@ -2,72 +2,54 @@
 
 public class ElevatorService : IElevatorService
 {
-	private const int NumberOfFloors = 16;
 	private readonly ILogger _logger; //logging is currently not implemented
+	private readonly IElevatorState _elevatorState;
 
 	public ElevatorService
 	(
-		ILogger<ElevatorService> logger
+		ILogger<ElevatorService> logger,
+		IElevatorState elevatorState
 	)
 	{
 		_logger = logger;
+		_elevatorState = elevatorState;
 	}
 
-	public async Task<bool> FetchToFloor(int floorNumber)
+	public async Task<int[]> PressButtonFromFloor(int floorNumber)
 	{
 		//WARNING: This is a stub - replace with real implementation
 
-		var isOnItsWay = IsFloorValid(floorNumber);
-		return await Task.FromResult(isOnItsWay);
+		if (!_elevatorState.IsFloorValid(floorNumber))
+			return new[] { -1 }; //very basic return value for bad request
+
+		var currentlySelectedFloors = _elevatorState.GetAllRequestedFloors().ToArray();
+		_elevatorState.CallFromFloor(floorNumber);
+
+		return await Task.FromResult(currentlySelectedFloors.ToArray());
 	}
 
-	public async Task<int[]> SelectTargetFloor(int floorNumber)
+	public async Task<int[]> PressButtonFromCabin(int floorNumber)
 	{
 		//WARNING: This is a stub - replace with real implementation
 		//Return type should be an object containing possible error description
 
-		var selectedFloors = GetRandomFloors().ToList();
+		if (!_elevatorState.IsFloorValid(floorNumber))
+			return new[] { -1 };
 
-		if (IsFloorValid(floorNumber) && !selectedFloors.Contains(floorNumber))
-			selectedFloors.Add(floorNumber);
+		_elevatorState.CallFromCabin(floorNumber);
 
-		//NOTE: Purposely not sorting here so we can see our floor at the bottom of the list
-
-		return await Task.FromResult(selectedFloors.ToArray());
+		return await GetRequestedFloors();
 	}
 
 	public async Task<int[]> GetRequestedFloors()
 	{
 		//WARNING: This is a stub - replace with real implementation
-
-		var selectedFloors = GetRandomFloors().ToArray();
-		return await Task.FromResult(selectedFloors);
+		return await Task.FromResult(_elevatorState.GetAllRequestedFloors().ToArray());
 	}
 
 	public async Task<int> GetNextSelectedFloor()
 	{
 		//WARNING: This is a stub - replace with real implementation
-
-		var selectedFloors = GetRandomFloors().ToArray();
-		return await Task.FromResult(selectedFloors[2]);
-	}
-
-
-	private IEnumerable<int> GetRandomFloors()
-	{
-		Random randomSelectedFloors = new();
-
-		var floors = Enumerable
-			.Repeat(0, 6)
-			.Select(i => randomSelectedFloors.Next(1, NumberOfFloors))
-			.ToHashSet()
-			.OrderBy(i => i);
-
-		return floors;
-	}
-
-	private bool IsFloorValid(int floorNumber)
-	{
-		return floorNumber > 0 && floorNumber <= NumberOfFloors;
+		return await Task.FromResult(_elevatorState.GetNextRequestedFloor());
 	}
 }

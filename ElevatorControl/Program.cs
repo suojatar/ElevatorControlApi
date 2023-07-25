@@ -2,7 +2,7 @@ using ElevatorControl.Services;
 
 namespace ElevatorControl
 {
-	public class Program
+    public class Program
 	{
 		public static void Main(string[] args)
 		{
@@ -15,7 +15,9 @@ namespace ElevatorControl
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
-			builder.Services.AddTransient<IElevatorService, ElevatorService>();
+			builder.Services
+				.AddSingleton<IElevatorState, ElevatorState>(serviceProvider => new(16)) //Hard-coding the number of floors here; value should be read from config
+				.AddTransient<IElevatorService, ElevatorService>();
 
 			var app = builder.Build();
 

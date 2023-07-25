@@ -2,6 +2,9 @@
 
 public interface IElevatorState
 {
-	void AddFloorToQueue(int floorNumber);
-	IEnumerable<int> GetRequestedFloors();
+	void CallFromFloor(int floorNumber);
+	void CallFromCabin(int floorNumber);
+	IEnumerable<int> GetAllRequestedFloors();
+	public int GetNextRequestedFloor();
+	bool IsFloorValid(int floorNumber);
 }

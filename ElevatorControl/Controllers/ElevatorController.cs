@@ -25,16 +25,18 @@ namespace ElevatorControl.Controllers
 		/// </summary>
 		/// <response code="200">Elevator called to specified floor</response>
 		/// <response code="400">Invalid floor was entered</response>
-		[HttpGet]
-		[Route("[action]/floorNumber")]
+		[HttpPut]
+		[Route("[action]")]
 		public async Task<IActionResult> FetchToFloor(int floorNumber)
 		{
-			var isSuccess = await _elevatorService.FetchToFloor(floorNumber);
+			var priorFloors = await _elevatorService.PressButtonFromFloor(floorNumber);
 
-			if (isSuccess)
-				return Ok($"Coming to floor {floorNumber}!");
-			else
+			if (!priorFloors.Any())
+				return Ok($"Floor {floorNumber} will be served immediately.");
+			else if (priorFloors.Count() == 1 && priorFloors[0] == -1)
 				return BadRequest($"Floor {floorNumber} does not exist!");
+			else
+				return Ok($"Floor {floorNumber} will be served after floors {string.Join(", ", priorFloors)}");
 		}
 
 
@@ -47,9 +49,9 @@ namespace ElevatorControl.Controllers
 		[Route("[action]")]
 		public async Task<IActionResult> SelectTargetFloor(int floorNumber)
 		{
-			var requestedFloors = await _elevatorService.SelectTargetFloor(floorNumber);
+			var requestedFloors = await _elevatorService.PressButtonFromCabin(floorNumber);
 
-			if (requestedFloors != null)
+			if (requestedFloors.Any())
 				return Ok(requestedFloors);
 			else
 				return BadRequest("No floors have been selected.");

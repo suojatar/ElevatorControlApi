@@ -15,20 +15,28 @@ public class ElevatorService : IElevatorService
 		_elevatorState = elevatorState;
 	}
 
-	public async Task<bool> FetchToFloor(int floorNumber)
+	public async Task<int[]> PressButtonFromFloor(int floorNumber)
 	{
 		//WARNING: This is a stub - replace with real implementation
 
-		//var isOnItsWay = IsFloorValid(floorNumber);
-		return await Task.FromResult(true);
+		if (!_elevatorState.IsFloorValid(floorNumber))
+			return new[] { -1 }; //very basic return value for bad request
+
+		var currentlySelectedFloors = _elevatorState.GetAllRequestedFloors().ToArray();
+		_elevatorState.CallFromFloor(floorNumber);
+
+		return await Task.FromResult(currentlySelectedFloors.ToArray());
 	}
 
-	public async Task<int[]> SelectTargetFloor(int floorNumber)
+	public async Task<int[]> PressButtonFromCabin(int floorNumber)
 	{
 		//WARNING: This is a stub - replace with real implementation
 		//Return type should be an object containing possible error description
 
-		_elevatorState.AddFloorToQueue(floorNumber);
+		if (!_elevatorState.IsFloorValid(floorNumber))
+			return new[] { -1 };
+
+		_elevatorState.CallFromCabin(floorNumber);
 
 		return await GetRequestedFloors();
 	}
@@ -36,15 +44,12 @@ public class ElevatorService : IElevatorService
 	public async Task<int[]> GetRequestedFloors()
 	{
 		//WARNING: This is a stub - replace with real implementation
-
-		return await Task.FromResult(_elevatorState.GetRequestedFloors().ToArray());
+		return await Task.FromResult(_elevatorState.GetAllRequestedFloors().ToArray());
 	}
 
 	public async Task<int> GetNextSelectedFloor()
 	{
 		//WARNING: This is a stub - replace with real implementation
-
-		var selectedFloors = await GetRequestedFloors();
-		return selectedFloors[2];
+		return await Task.FromResult(_elevatorState.GetNextRequestedFloor());
 	}
 }

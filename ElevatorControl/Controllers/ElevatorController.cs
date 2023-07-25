@@ -20,6 +20,7 @@ namespace ElevatorControl.Controllers
 			_elevatorService = elevatorService;
 		}
 
+
 		/// <summary>
 		/// Calls the elevator upon passenger request from outside the car
 		/// </summary>
@@ -27,7 +28,7 @@ namespace ElevatorControl.Controllers
 		/// <response code="400">Invalid floor was entered</response>
 		[HttpPut]
 		[Route("[action]")]
-		public async Task<IActionResult> FetchToFloor(int floorNumber)
+		public async Task<IActionResult> CallFromFloor(int floorNumber)
 		{
 			var priorFloors = await _elevatorService.PressButtonFromFloor(floorNumber);
 
@@ -47,7 +48,7 @@ namespace ElevatorControl.Controllers
 		/// <response code="400">Error: No selected floors were returned</response>
 		[HttpPut]
 		[Route("[action]")]
-		public async Task<IActionResult> SelectTargetFloor(int floorNumber)
+		public async Task<IActionResult> SelectFromCabin(int floorNumber)
 		{
 			var requestedFloors = await _elevatorService.PressButtonFromCabin(floorNumber);
 
@@ -57,27 +58,27 @@ namespace ElevatorControl.Controllers
 				return BadRequest("No floors have been selected.");
 		}
 
-
 		/// <summary>
 		/// Returns a list of floors selected by all passengers during the current trip
 		/// </summary>
 		/// <response code="200">Selected floors found</response>
 		[HttpGet]
-		[Route("[action]")]
-		public async Task<IActionResult> GetRequestedFloors()
+		[Route("SelectedFloors/[action]")]
+		public async Task<IActionResult> All()
 		{
 			var requestedFloors = await _elevatorService.GetRequestedFloors();
 
 			return Ok(requestedFloors);
 		}
 
+
 		/// <summary>
 		/// Shows the next floor at which the elevator will stop
 		/// </summary>
 		/// <response code="200">Next floor found</response>
 		[HttpGet]
-		[Route("[action]")]
-		public async Task<IActionResult> GetNextFloor()
+		[Route("SelectedFloors/[action]")]
+		public async Task<IActionResult> Next()
 		{
 			var nextFloor = await _elevatorService.GetNextSelectedFloor();
 

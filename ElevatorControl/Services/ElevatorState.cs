@@ -32,8 +32,6 @@ public class ElevatorState : IElevatorState
 	/// <param name="floorNumber"></param>
 	public void CallFromFloor(int floorNumber)
 	{
-		//if (IsFloorValid(floorNumber) && !RequestedFloorQueue.Contains(floorNumber))
-		//	RequestedFloorQueue.Add(floorNumber);
 		AddFloorToQueue(floorNumber);
 	}
 
@@ -43,14 +41,8 @@ public class ElevatorState : IElevatorState
 	/// <param name="floorNumber"></param>
 	public void CallFromCabin(int floorNumber)
 	{
-		//if (IsFloorValid(floorNumber) && !RequestedFloorQueue.Contains(floorNumber))
-		//	RequestedFloorQueue.Add(floorNumber);
-
 		AddFloorToQueue(floorNumber);
 		RequestedFloorQueue.Sort();
-
-		//RequestedFloorQueue = (List<int>) RequestedFloorQueue
-		//	.OrderBy(i => i);
 	}
 
 	public bool IsFloorValid(int floorNumber)
@@ -58,12 +50,10 @@ public class ElevatorState : IElevatorState
 		return floorNumber > 0 && floorNumber <= _numberOfFloors;
 	}
 
-
 	public IEnumerable<int> GetAllRequestedFloors()
 	{
 		return RequestedFloorQueue;
 	}
-
 
 	public int GetNextRequestedFloor()
 	{
